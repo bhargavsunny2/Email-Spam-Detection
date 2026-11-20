@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Email Spam Detection System</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+    <header class="main-header">
+        <div class="header-icon">📧</div>
+        <h1>Email Spam Detection System</h1>
+        <p>AI-powered email classification using Machine Learning</p>
+        <span class="header-badge">Machine Learning Project</span>
+    </header>
+
+    <!-- MESSAGE INPUT -->
+    <section class="section">
+
+        <h2>🔍 Check Your Email</h2>
+
+        <p class="description">
+            Enter your email message below to check whether it is spam or normal.
+        </p>
+
+        <form method="POST" action="{{ url_for('home') }}">
+
+            <textarea
+                name="message"
+                placeholder="Enter your email message here..."
+                required>{{ message }}</textarea>
+
+            <button type="submit" class="analyze-btn">
+                🔍 Analyze Message
+            </button>
+
+        </form>
+
+    </section>
+
+    <!-- PREDICTION RESULT -->
+    {% if result %}
+
+    <section class="result-section">
+
+        <h2>Prediction Result</h2>
+
+        <div class="result {{ status }}">
+            {% if status == 'spam' %}
+                🚨 {{ result }}
+            {% else %}
+                ✅ {{ result }}
+            {% endif %}
+        </div>
+
+        <div class="confidence-box">
+            <span>Prediction Probability</span>
+            <strong>{{ confidence }}%</strong>
+        </div>
+
+        <div class="confidence-bar">
+            <div class="confidence-fill"
+                 style="width: {{ confidence }}%;">
+            </div>
+        </div>
+
+    </section>
+
+    {% endif %}
+
+    <!-- MODEL STATISTICS -->
+    <section class="section">
+
+        <h2>📊 Model Statistics</h2>
+
+        <div class="stats">
+
+            <div class="stat-card">
+                <div class="stat-icon">📩</div>
+                <h3>Total Messages</h3>
+                <p>{{ total_messages }}</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🚨</div>
+                <h3>Spam Messages</h3>
+                <p>{{ spam_messages }}</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <h3>Normal Messages</h3>
+                <p>{{ ham_messages }}</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <h3>Test Accuracy</h3>
+                <p>{{ test_accuracy }}%</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <h3>Precision</h3>
+                <p>{{ precision }}%</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <h3>Recall</h3>
+                <p>{{ recall }}%</p>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⚡</div>
+                <h3>F1 Score</h3>
+                <p>{{ f1 }}%</p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- CHARTS -->
+    <section class="section">
+
+        <h2>📉 Data Visualization</h2>
+
+        <div class="charts-grid">
+
+            <div class="chart-container">
+                <h3>Spam vs Normal Messages</h3>
+                <canvas id="spamChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3>Confusion Matrix</h3>
+                <canvas id="confusionChart"></canvas>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- PREDICTION HISTORY -->
+    <section class="section">
+
+        <h2>🕒 Prediction History</h2>
+
+        <p class="description">
+            Your latest email predictions are displayed here.
+        </p>
+
+        <div class="history-actions">
+
+            <a href="{{ url_for('download_history') }}"
+               class="action-btn download-btn">
+                <span>⬇</span>
+                Download History
+            </a>
+
+            <a href="{{ url_for('clear_history') }}"
+               class="action-btn clear-btn"
+               onclick="return confirm('Are you sure you want to clear prediction history?');">
+                <span>🗑</span>
+                Clear History
+            </a>
+
+        </div>
+
+        {% if history %}
+
+            <div class="history-list">
+
+                {% for item in history %}
+
+                    <div class="history-item">
+
+                        <div class="history-message">
+                            {{ item.message }}
+                        </div>
+
+                        <div class="history-details">
+
+                            <span class="history-status {{ item.status }}">
+                                {{ item.result }}
+                            </span>
+
+                            <span class="history-confidence">
+                                {{ item.confidence }}%
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-history">
+                <div class="empty-icon">📭</div>
+                <h3>No Prediction History</h3>
+                <p>Your analyzed messages will appear here.</p>
+            </div>
+
+        {% endif %}
+
+    </section>
+
+    <!-- ABOUT PROJECT -->
+    <section class="about-section">
+
+        <h2>💡 About This Project</h2>
+
+        <p>
+            The Email Spam Detection System is a Machine Learning application
+            that identifies whether an email message is spam or normal.
+            It uses Natural Language Processing and the Naive Bayes algorithm.
+        </p>
+
+        <div class="technology-list">
+
+            <span>Python</span>
+            <span>Flask</span>
+            <span>Machine Learning</span>
+            <span>Naive Bayes</span>
+            <span>TF-IDF</span>
+            <span>HTML</span>
+            <span>CSS</span>
+
+        </div>
+
+        <h3>How It Works</h3>
+
+        <ol>
+            <li>User enters an email message.</li>
+            <li>TF-IDF converts the message into numerical features.</li>
+            <li>Naive Bayes predicts the message category.</li>
+            <li>The website displays the prediction result.</li>
+        </ol>
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>Email Spam Detection System | Machine Learning Project</p>
+        <p>Developed using Python and Flask</p>
+    </footer>
+
+</div>
+
+<!-- CHART SCRIPTS -->
+<script>
+
+    // Spam vs Normal Chart
+
+    const spamCanvas = document.getElementById('spamChart');
+
+    new Chart(spamCanvas, {
+
+        type: 'doughnut',
+
+        data: {
+            labels: ['Spam Messages', 'Normal Messages'],
+
+            datasets: [{
+                data: [{{ spam_messages }}, {{ ham_messages }}],
+                backgroundColor: ['#ef4444', '#22c55e'],
+                borderWidth: 3,
+                borderColor: '#ffffff'
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+
+    });
+
+
+    // Confusion Matrix Chart
+
+    const confusionCanvas = document.getElementById('confusionChart');
+
+    new Chart(confusionCanvas, {
+
+        type: 'bar',
+
+        data: {
+            labels: [
+                'Correct Normal',
+                'False Spam',
+                'Missed Spam',
+                'Correct Spam'
+            ],
+
+            datasets: [{
+                label: 'Number of Messages',
+
+                data: [
+                    {{ true_normal }},
+                    {{ false_spam }},
+                    {{ missed_spam }},
+                    {{ true_spam }}
+                ],
+
+                backgroundColor: [
+                    '#22c55e',
+                    '#f59e0b',
+                    '#ef4444',
+                    '#2563eb'
+                ],
+
+                borderRadius: 8
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+
+    });
+
+</script>
+
+</body>
+</html>
