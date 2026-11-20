@@ -1,3 +1,11 @@
+## 🌐 Live Demo
+
+**Try the Email Spam Detection System here:**
+
+👉 https://email-spam-detection-b0up.onrender.com
+
+The application is deployed online and can be accessed using laptops, desktops, tablets and smartphones.
+
 # 📧 Email Spam Detection System Using Machine Learning
 
 ## 📌 About the Project
